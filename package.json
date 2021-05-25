@@ -1,0 +1,16 @@
+{
+  "name": "promesa",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:youngluo/promesa.git",
+  "author": "Young <ly532265997@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "tsc",
+    "test": "promises-aplus-tests dist/adapter"
+  },
+  "devDependencies": {
+    "promises-aplus-tests": "^2.1.2",
+    "typescript": "^4.2.4"
+  }
+}
