@@ -7,10 +7,42 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsc",
-    "test": "promises-aplus-tests dist/adapter"
+    "test": "promises-aplus-tests test/adapter",
+    "commit": "git add -A && git-cz",
+    "release-major": "yarn build && standard-version -r major",
+    "release-minor": "yarn build && standard-version -r minor",
+    "release-patch": "yarn build && standard-version -r patch"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
   },
   "devDependencies": {
+    "@commitlint/cli": "^12.1.4",
+    "@commitlint/config-conventional": "^12.1.4",
+    "@typescript-eslint/eslint-plugin": "^4.26.0",
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^7.27.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "husky": "^6.0.0",
+    "lint-staged": "^11.0.0",
     "promises-aplus-tests": "^2.1.2",
+    "standard-version": "^9.3.0",
     "typescript": "^4.2.4"
   }
 }

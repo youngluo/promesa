@@ -1,0 +1,70 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "env": {
+    "jest/globals": true,
+    "node": true
+  },
+  "extends": "airbnb-base",
+  "plugins": ["@typescript-eslint", "import", "jest"],
+  "rules": {
+    "comma-dangle": ["error", "never"],
+    "class-methods-use-this": "off",
+    "import/prefer-default-export": "off",
+    "import/no-unresolved": "off",
+    "import/no-extraneous-dependencies": "off",
+    "no-useless-constructor": "off",
+    "no-unused-vars": "off",
+    "no-return-await": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": false
+      }
+    ],
+    "no-empty-function": [
+      "error",
+      {
+        "allow": ["constructors"]
+      }
+    ],
+    "newline-before-return": "error",
+    "padding-line-between-statements": [
+      "error",
+      {
+        "blankLine": "always",
+        "prev": ["const", "let", "var", "block-like"],
+        "next": "*"
+      },
+      {
+        "blankLine": "never",
+        "prev": ["const", "let", "var"],
+        "next": ["const", "let", "var"]
+      }
+    ],
+    "object-curly-newline": [
+      "error",
+      {
+        "multiline": true,
+        "minProperties": 6
+      }
+    ],
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1
+      }
+    ],
+    "camelcase": [
+      "error",
+      {
+        "ignoreDestructuring": true,
+        "properties": "never"
+      }
+    ]
+  }
+}

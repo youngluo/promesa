@@ -1,4 +1,5 @@
-import Promesa from './Promesa'
+const { Promesa } = require('../dist/Promesa')
+
 Promesa.deferred = function () {
   var dfd = {}
   dfd.promise = new Promesa(function (resolve, reject) {
@@ -7,4 +8,5 @@ Promesa.deferred = function () {
   })
   return dfd
 }
-export default Promesa
+
+module.exports = Promesa

@@ -2,24 +2,40 @@ const PENDING = 'PENDING'
 const FULFILLED = 'FULFILLED'
 const REJECTED = 'REJECTED'
 
-class Promesa {
-  state = PENDING
-  value: any = ''
-  reason = ''
+type Value = any
 
-  constructor(executor) {
-    const resolve = (value: any) => {
-      if (this.state === PENDING) {
-        this.state = FULFILLED
-        this.value = value
-      }
+type Reason = any
+
+type Resolve = (value: Value) => void
+
+type Reject = (reason?: Reason) => void
+
+type Executor = (resolve?: Resolve, reject?: Reject) => void
+
+type Noop = () => void
+
+export class Promesa {
+  state = PENDING
+  reason: Reason
+  value: Value
+  onResolvedCallbacks: Noop[] = []
+  onRejectedCallbacks: Noop[] = []
+
+  constructor(executor: Executor) {
+    const resolve = (value: Value) => {
+      if (this.state !== PENDING) return
+      this.state = FULFILLED
+      this.value = value
+      // 依次执行 resolved 回调
+      this.onResolvedCallbacks.forEach(fn => fn())
     }
 
-    const reject = (reason: any) => {
-      if (this.state === PENDING) {
-        this.state = REJECTED
-        this.reason = reason
-      }
+    const reject = (reason?: Reason) => {
+      if (this.state !== PENDING) return
+      this.state = REJECTED
+      this.reason = reason
+      // 依次执行 rejected 回调
+      this.onRejectedCallbacks.forEach(fn => fn())
     }
 
     try {
@@ -29,13 +45,29 @@ class Promesa {
     }
   }
 
-  then(onFulfilled, onRejected) {
-    if (this.state === FULFILLED) {
-      onFulfilled(this.value)
+  then(onFulfilled?: Resolve, onRejected?: Reject) {
+    if (typeof onFulfilled === 'function') {
+      if (this.state === FULFILLED) {
+        onFulfilled(this.value)
+      }
+
+      if (this.state === PENDING) {
+        this.onResolvedCallbacks.push(() => {
+          onFulfilled(this.value)
+        })
+      }
     }
 
-    if (this.state === REJECTED) {
-      onRejected(this.reason)
+    if (typeof onRejected === 'function') {
+      if (this.state === REJECTED) {
+        onRejected(this.reason)
+      }
+
+      if (this.state === PENDING) {
+        this.onResolvedCallbacks.push(() => {
+          onRejected(this.reason)
+        })
+      }
     }
   }
 
@@ -47,16 +79,6 @@ class Promesa {
 
   }
 
-  deferred() {
-    const result = {};
-    result.promise = new Promesa((resolve, reject) => {
-      result.resolve = resolve;
-      result.reject = reject;
-    });
-
-    return result;
-  }
-
   static all() {
 
   }
@@ -65,5 +87,3 @@ class Promesa {
 
   }
 }
-
-export default Promesa
