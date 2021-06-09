@@ -1,12 +1,8 @@
-const { Promesa } = require('../dist/Promesa')
-
+const { Promesa } = require('../dist/Promesa');
 
 new Promesa((resolve) => {
-  setTimeout(() => {
-    resolve('123')
-  }, 2000)
-
+  resolve('123');
 }).then((res) => {
-  console.log('=======', res)
-})
+  console.log('=======', res);
+});
 
