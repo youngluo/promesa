@@ -1,12 +1,13 @@
-const { Promesa } = require('../dist/Promesa')
+const { Promesa } = require('../dist/Promesa');
 
-Promesa.deferred = function () {
-  var dfd = {}
-  dfd.promise = new Promesa(function (resolve, reject) {
-    dfd.resolve = resolve
-    dfd.reject = reject
-  })
-  return dfd
-}
+Promesa.deferred = () => {
+  const dfd = {};
+  dfd.promise = new Promesa((resolve, reject) => {
+    dfd.resolve = resolve;
+    dfd.reject = reject;
+  });
 
-module.exports = Promesa
+  return dfd;
+};
+
+module.exports = Promesa;
