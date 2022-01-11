@@ -6,8 +6,8 @@
   "author": "Young <ly532265997@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "tsc",
-    "test": "promises-aplus-tests test/adapter",
+    "build": "tsc",
+    "test": "yarn build && promises-aplus-tests test/adapter",
     "commit": "git add -A && git-cz",
     "release-major": "yarn build && standard-version -r major",
     "release-minor": "yarn build && standard-version -r minor",
