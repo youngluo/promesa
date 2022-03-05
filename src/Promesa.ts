@@ -1,12 +1,12 @@
-import { isObject, isFunction, isIterator } from './util'
+import { isObject, isFunction } from './util'
 
 type Value = any
 
 type Reason = any
 
-type Resolve = (value: Value) => void
+type Resolve = (value?: Value) => Value
 
-type Reject = (reason?: Reason) => void
+type Reject = (reason?: Reason) => Reason
 
 type Executor = (resolve: Resolve, reject: Reject) => void
 
@@ -113,14 +113,12 @@ export class Promesa {
       if (this.state !== PENDING) return
       this.state = FULFILLED
       this.value = value
-      // 依次执行 resolved 回调
       this.resolvedCallbacks.forEach((fn) => fn())
     }
     const reject = (reason?: Reason) => {
       if (this.state !== PENDING) return
       this.state = REJECTED
       this.reason = reason
-      // 依次执行 rejected 回调
       this.rejectedCallbacks.forEach((fn) => fn())
     }
 
@@ -205,11 +203,25 @@ export class Promesa {
     return this.then(undefined, onRejected)
   }
 
-  finally() {}
+  finally(callback: () => void) {
+    if (!isFunction(callback)) return this.then(callback, callback)
+    return this.then(
+      (value) => Promesa.resolve(callback()).then(() => value),
+      (reason) =>
+        Promesa.resolve(callback()).then(() => {
+          throw reason
+        })
+    )
+  }
 
   static resolve(value?: Value) {
+    if (value instanceof Promesa) return value
     return new Promesa((resolve) => {
-      resolve(value)
+      if (isObject(value) && isFunction(value.then)) {
+        value.then(resolve)
+      } else {
+        resolve(value)
+      }
     })
   }
 
@@ -219,32 +231,32 @@ export class Promesa {
     })
   }
 
-  static all<T>(promises?: Iterable<T>) {
-    if (!isIterator(promises)) {
+  static all<T>(promises?: Array<T>) {
+    if (!Array.isArray(promises)) {
       throw new TypeError(
         `${typeof promises} ${promises} is not iterable (cannot read property Symbol(Symbol.iterator)).`
       )
     }
+    // 此时表现为同步
+    if (promises.length === 0) return Promesa.resolve(promises)
 
     return new Promesa((resolve, reject) => {
       const values: Value[] = []
-      // @ts-ignore
-      const size = promises.length || promises.size
-      let index = 0
-      for (const promise of promises!) {
-        Promesa.resolve(promise)
+      const size = promises.length
+      let count = 0
+      for (let i = 0; i < promises.length; i++) {
+        Promesa.resolve(promises[i])
           .then((value) => {
-            values[index] = value
-            if (values.length === size) resolve(values)
+            values[i] = value
+            if (++count === size) resolve(values)
           })
           .catch(reject)
-        index++
       }
     })
   }
 
-  static race<T>(promises?: Iterable<T>) {
-    if (!isIterator(promises)) {
+  static race<T>(promises?: Array<T>) {
+    if (!Array.isArray(promises)) {
       throw new TypeError(
         `${typeof promises} ${promises} is not iterable (cannot read property Symbol(Symbol.iterator)).`
       )
